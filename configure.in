@@ -1,0 +1,66 @@
+#-----------------------------------------------------------------------------
+# Copyright (C)2002,2003 InfoStreet, Inc.    www.infostreet.com
+#
+# Author:   Laurentiu C. Badea (L.C.) sourceforge.net/users/wotevah
+# Created:  2002
+# $LastChangedDate$
+# $LastChangedBy$
+# $Revision$
+#
+# Description:
+# Process this file with autoconf to produce a configure script.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# Version 2, as published by the Free Software Foundation.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to:
+# Free Software Foundation, Inc. 
+# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+#-----------------------------------------------------------------------------
+
+AC_INIT(httpd-log, 1.0, sourceforge.net/users/wotevah/)
+AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
+AC_CONFIG_SRCDIR([fd_cache.c])
+AM_CONFIG_HEADER([config.h])
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_RANLIB
+
+AC_ARG_WITH( syslog, [  --without-syslog        disable syslog() support ],
+        NO_SYSLOG=1)
+
+if test -z "$NO_SYSLOG"; then
+        AC_DEFINE(USE_SYSLOG,1,[enable use of syslog mechanism])
+        AC_MSG_RESULT(compiling with syslog support)
+else
+        AC_CHECK_HEADERS(syslog.h)
+        AC_CHECK_FUNCS(syslog)
+fi
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h stdlib.h string.h sys/socket.h sys/time.h unistd.h malloc.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_PID_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+# Checks for library functions.
+AC_TYPE_SIGNAL
+AC_CHECK_FUNCS([alarm fork atexit malloc stat memcmp bzero fchdir gethostbyaddr gethostbyname gethostname inet_ntoa memchr mkdir select socket strdup strftime])
+
+#AC_CONFIG_FILES([])
+AC_OUTPUT(Makefile)
+
