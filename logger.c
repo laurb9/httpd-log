@@ -71,7 +71,7 @@ void cleanup(int sig){
     close(sock);
     if (sig)
       log_printf( 0, ZONE, "%s: got signal %d (%s), exiting.", me, sig, 
-		  SIGNAL_NAME(sig) );
+                  SIGNAL_NAME(sig) );
     else
       log_printf( 0, ZONE, "%s: pipe closed (EOF), exiting.", me );
     exit(0);
@@ -81,7 +81,7 @@ void cleanup(int sig){
 void cleanup_atexit(void){
   cleanup(0);
   DIE_ERROR( 0, ZONE, "%s: Stats: %lu entries sent, %lu discarded, %lu failed xmit",
-	     me, packets, discarded, failed );
+             me, packets, discarded, failed );
 }
 
 int main( int argc, char** argv ){
@@ -113,7 +113,7 @@ int main( int argc, char** argv ){
     if ( c == -1 ) break;
 
     LOG_PRINTF( DEBUG_MAX, ZONE, "%s: processing option \"-%c %s\"", 
-		me, (char)c, optarg );
+                me, (char)c, optarg );
     
     switch (c){
 
@@ -123,7 +123,7 @@ int main( int argc, char** argv ){
 
     case 'p':
       if (atoi(optarg))
-	port = atoi(optarg);
+        port = atoi(optarg);
 
     case 'd': 
       debug = atoi(optarg); 
@@ -147,8 +147,8 @@ int main( int argc, char** argv ){
   logserv.sin_addr = * ((struct in_addr*) info->h_addr);
 
   LOG_PRINTF( DEBUG_MIN, ZONE, "%s: Using server %s [%s] on port %d.", me, 
-	      info->h_name, inet_ntoa( logserv.sin_addr ),
-	      ntohs(logserv.sin_port) );
+              info->h_name, inet_ntoa( logserv.sin_addr ),
+              ntohs(logserv.sin_port) );
   /* LOG_PRINTF( DEBUG_MED, ZONE, "%s: Reading from stdin...", me ); */
 
   /*
@@ -168,25 +168,25 @@ int main( int argc, char** argv ){
        * For now, eat the rest of the line.
        */
       while ( strlen(buffer) >= MSG_SIZE-1 &&
-	      buffer[MSG_SIZE-1] != '\n' &&
-	      fgets( buffer, MSG_SIZE, stdin ) ){
-	length += strlen(buffer);
+              buffer[MSG_SIZE-1] != '\n' &&
+              fgets( buffer, MSG_SIZE, stdin ) ){
+        length += strlen(buffer);
       }
       LOG_PRINTF( DEBUG_MED, ZONE, "%s: Discarded %d bytes (exceeded input buffer)",
-		  me, length );
+                  me, length );
       length = 0;
       ++discarded;
     }
     if (length){
       buffer[length-1] = '\0'; /* remove the final '\n' */
       if (sendto( sock, buffer, length, 0, 
-		  (struct sockaddr*)&logserv, sizeof(logserv)) < 0){
-	LOG_PRINTF( DEBUG_ERROR, ZONE, "%s: sendto( %s:%d ): %s",
-		    me, info->h_name,
-		    ntohs(logserv.sin_port), LAST_ERROR );
-	++failed;
+                  (struct sockaddr*)&logserv, sizeof(logserv)) < 0){
+        LOG_PRINTF( DEBUG_ERROR, ZONE, "%s: sendto( %s:%d ): %s",
+                    me, info->h_name,
+                    ntohs(logserv.sin_port), LAST_ERROR );
+        ++failed;
       } else {
-	++packets;
+        ++packets;
       }
     }
   }

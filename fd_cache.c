@@ -38,8 +38,8 @@ static const char *VERSION = "$Id$";
 
 fd_element **fd_array = NULL;     /* main descriptors table                */
 fd_element **fd_sort_array = NULL;/* descriptors table used for sorting
-				     (it holds the same pointers except the
-				     order may change)                     */
+                                     (it holds the same pointers except the
+                                     order may change)                     */
 int fd_num, fd_allocated; /* fd_allocated starts at 0, upto fd_num */
 void *mem_pool;
 
@@ -60,7 +60,7 @@ inline int delete_fd( int index ){
   fd_allocated--;
   if (DEBUG_MAX){
     LOG_PRINTF( DEBUG_MAX, ZONE, "delete_fd(%d, \"%s\"): %d remaining.", 
-		index, fd_array[index]->file, fd_allocated );
+                index, fd_array[index]->file, fd_allocated );
   }
   return fd_allocated;
 }
@@ -94,12 +94,12 @@ void destroy_fd_table(void){
 void close_fd_all(int do_sync, time_t age){
   int i;
   LOG_PRINTF( 1, ZONE, "close_fd_all(): closing all descriptors older than %d (total is %d).",
-	      age, fd_allocated );
+              age, fd_allocated );
 
   if (fd_array){
     for (i=0; i<fd_num; i++){
       if (fd_array[i]->time < age)
-	delete_fd( i );
+        delete_fd( i );
     }
   }
   if (do_sync){
@@ -139,9 +139,9 @@ void init_fd_table( void ){
   }
   
   LOG_PRINTF( DEBUG_MIN, ZONE, 
-	      "init_fd_table(): %d cells (%d+2*%d bytes) allocated.",
-	      fd_num, fd_num * sizeof(fd_element), 
-	      fd_num * sizeof(fd_element*) );
+              "init_fd_table(): %d cells (%d+2*%d bytes) allocated.",
+              fd_num, fd_num * sizeof(fd_element), 
+              fd_num * sizeof(fd_element*) );
 
   /*
    * Now distribute chunks of the pool to individual elements
@@ -209,7 +209,7 @@ void garbage_collect( int gc_delete ){
   }
   
   LOG_PRINTF( DEBUG_MED, ZONE, "garbage_collect(): finished, %d deleted.",
-	      fd_num * gc_delete/100 );
+              fd_num * gc_delete/100 );
 }
 
 /*
@@ -224,7 +224,7 @@ int add_fd( int fd, char *filename ){
    * Look for an empty slot
    */
   for ( i=pos, count = fd_num;
-	count && fd_array[i]->fd; i = (i+1) % fd_num, count-- );
+        count && fd_array[i]->fd; i = (i+1) % fd_num, count-- );
   if (count){
     /*
      * Found an empty slot, fill it up.
@@ -237,7 +237,7 @@ int add_fd( int fd, char *filename ){
     fd_allocated++;
 
     LOG_PRINTF( DEBUG_MAX, ZONE, "add_fd(%d, \"%s\"): hash %d, allocated %d.",
-		fd, filename, pos, i );
+                fd, filename, pos, i );
 
     return i;
   };
@@ -267,11 +267,11 @@ int make_path( char *path ){
     *pos = '\0';
     if (!stat( path, &stat_buf )){
       if ( !S_ISDIR(stat_buf.st_mode) ){
-	DIE_ERROR( 7, ZONE, "%s is not a directory!", path );
+        DIE_ERROR( 7, ZONE, "%s is not a directory!", path );
       }
     } else {
       if (mkdir( path, 0755 )){
-	DIE_ERROR( 7, ZONE, "mkdir( %s ): %s", path, LAST_ERROR );
+        DIE_ERROR( 7, ZONE, "mkdir( %s ): %s", path, LAST_ERROR );
       }
     }
     LOG_PRINTF( DEBUG_MAX, ZONE, "make_path: created dir %s", path );
@@ -312,8 +312,8 @@ int get_fd( char *filename ){
      * right here.
      */
     for( i=pos, count = fd_num; 
-	 count && memcmp( fd_array[i]->file, filename, length ); 
-	 i = (i + 1) % fd_num, count-- );
+         count && memcmp( fd_array[i]->file, filename, length ); 
+         i = (i + 1) % fd_num, count-- );
     
     if (count){
       /*
@@ -323,7 +323,7 @@ int get_fd( char *filename ){
       pos_cache = i;
 
       LOG_PRINTF( DEBUG_MAX, ZONE, "get_fd(\"%s\"): returning %d (pos %d).", 
-		  filename, fd_array[i]->fd, i );
+                  filename, fd_array[i]->fd, i );
 
       return fd_array[i]->fd;
     }
@@ -339,16 +339,16 @@ int get_fd( char *filename ){
 
     } else {
       if (errno == EMFILE || errno == ENFILE){
-	/*
-	 * we should not reach here
-	 */
-	DIE_ERROR( 7, ZONE, "get_fd(%s): open: %s", filename, LAST_ERROR );
+        /*
+         * we should not reach here
+         */
+        DIE_ERROR( 7, ZONE, "get_fd(%s): open: %s", filename, LAST_ERROR );
       } else {
-	if (--count){
-	  make_path( filename );
-	} else {
-	  DIE_ERROR( 7, ZONE, "get_fd(%s): open: %s", filename, LAST_ERROR );
-	}
+        if (--count){
+          make_path( filename );
+        } else {
+          DIE_ERROR( 7, ZONE, "get_fd(%s): open: %s", filename, LAST_ERROR );
+        }
       }
     }
   }

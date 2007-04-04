@@ -81,8 +81,8 @@ inline void mk_timestamp( time_t t, char *where ){
   offset = timezone / 60; /* that is a global variable */
   len = strlen(where);
   snprintf( where+len, TIMESTAMP_SIZE-len,
-	    "%c%.2d%.2d]", (offset>0) ? '-' : '+',
-	    offset/60, offset % 60 );
+            "%c%.2d%.2d]", (offset>0) ? '-' : '+',
+            offset/60, offset % 60 );
 #endif
 }
 
@@ -231,22 +231,22 @@ void process_entry( log_entry *rec ){
     mk_timestamp( rec->time, NULL );
     snprintf( msg_buf, MSG_SIZE,
 #ifdef LOG_EXTENDED
-	      "%s - %s %s \"%s %s %s\" %d %d \"%s\" \"%s\"",
+              "%s - %s %s \"%s %s %s\" %d %d \"%s\" \"%s\"",
 #else
-	      "%s - %s %s \"%s %s %s\" %d %d",
+              "%s - %s %s \"%s %s %s\" %d %d",
 #endif
-	      rec->hostip,
-	      rec->user,
-	      timestamp,
-	      rec->method,
-	      rec->uri,
-	      rec->proto,
-	      rec->status,
-	      rec->bytes
+              rec->hostip,
+              rec->user,
+              timestamp,
+              rec->method,
+              rec->uri,
+              rec->proto,
+              rec->status,
+              rec->bytes
 #ifdef LOG_EXTENDED
-	      , rec->referrer, rec->useragent
+              , rec->referrer, rec->useragent
 #endif
-	      );
+              );
     length += sizeof(unsigned) * 2 + 
       (*(unsigned*)(msg_buf - sizeof(unsigned)) = strlen( msg_buf ));
 
@@ -258,7 +258,7 @@ void process_entry( log_entry *rec ){
     }
   } else {
     LOG_PRINTF( DEBUG_MAX, ZONE, "discarded %s %s (status %d)", 
-		rec->method, rec->uri, rec->status );
+                rec->method, rec->uri, rec->status );
   }
 }
 
@@ -313,11 +313,11 @@ void write_log_process( int p[2] ){
     rootdir = open( logger_spool, 0 );
     if (rootdir < 0)
       DIE_ERROR( 5, ZONE, "write_log: open(dir %s): %s", 
-		 logger_spool, LAST_ERROR );
+                 logger_spool, LAST_ERROR );
   }
   if (fchdir( rootdir )){
     DIE_ERROR( 5, ZONE, "write_log: fchdir(%d) (%s): %s", rootdir, 
-	       logger_spool, LAST_ERROR );
+               logger_spool, LAST_ERROR );
   }
   
   /*
@@ -347,14 +347,14 @@ void write_log_process( int p[2] ){
 
       fd = get_fd( path_buf );
       if (fd){
-	write( fd, msg_buf, size+1 );
-	LOG_PRINTF( DEBUG_MAX, ZONE, "wrote %d bytes to %s", size+1, path_buf );
+        write( fd, msg_buf, size+1 );
+        LOG_PRINTF( DEBUG_MAX, ZONE, "wrote %d bytes to %s", size+1, path_buf );
       } else {
-	log_printf( 0, ZONE, "write_log: get_fd( %s ): %s, ignored.",
-		    path_buf, LAST_ERROR );
-	/*
-	 * The log line is ignored in this case...
-	 */
+        log_printf( 0, ZONE, "write_log: get_fd( %s ): %s, ignored.",
+                    path_buf, LAST_ERROR );
+        /*
+         * The log line is ignored in this case...
+         */
       }
     }
 

@@ -80,13 +80,13 @@ hash_t *hash_new( int size ){
   }
 
   LOG_PRINTF( DEBUG_MED, ZONE, 
-	      "hash.new(): creating hash of size %d", size );
+              "hash.new(): creating hash of size %d", size );
 
   hash = (hash_t*) malloc( sizeof(hash_t) );
   data = (hash_element*) malloc( size * sizeof(hash_element) );
   if (!hash || !data){
     LOG_PRINTF( DEBUG_ERROR, ZONE, 
-		"hash.new(): malloc(hash|data): %s", LAST_ERROR );
+                "hash.new(): malloc(hash|data): %s", LAST_ERROR );
     return NULL;
   }
 
@@ -142,8 +142,8 @@ int hash_insert( hash_t *hash, const char *key, void *value ){
   data = (hash_element*)hash->data + result;
 
   LOG_PRINTF( DEBUG_MAX, ZONE, 
-	      "hash.insert(): \"%s\" in bucket %d", 
-	      key, result );
+              "hash.insert(): \"%s\" in bucket %d", 
+              key, result );
 
   cur = data->first;
   prev = cur;
@@ -173,7 +173,7 @@ int hash_insert( hash_t *hash, const char *key, void *value ){
     new = (list_element*) malloc( sizeof(list_element) );
     if (!new){
       LOG_PRINTF( DEBUG_ERROR, ZONE, 
-		  "hash.insert(): malloc(list_element): %s", LAST_ERROR );
+                  "hash.insert(): malloc(list_element): %s", LAST_ERROR );
       return 0;
     }
     new->value = value;
@@ -184,19 +184,19 @@ int hash_insert( hash_t *hash, const char *key, void *value ){
       new->prev = cur->prev;
       cur->prev = new;
       if (new->prev){
-	new->prev->next = new;
+        new->prev->next = new;
       } else {
-	data->first = new; /* cur was the first element, update list head */
+        data->first = new; /* cur was the first element, update list head */
       }
     } else {         /* append after cur / create list */
       if (cur){
-	new->next = cur->next;
-	cur->next = new;
-	new->prev = cur;
+        new->next = cur->next;
+        cur->next = new;
+        new->prev = cur;
       } else {       /* create first element in list */
-	new->next = NULL;
-	new->prev = NULL;
-	data->first = new;
+        new->next = NULL;
+        new->prev = NULL;
+        data->first = new;
       }
     }
     data->count++;
@@ -207,7 +207,7 @@ int hash_insert( hash_t *hash, const char *key, void *value ){
     /* Key already exists, replace value */
     
     LOG_PRINTF( DEBUG_MAX, ZONE, 
-		"hash.insert(): \"%s\": replaced value", key );
+                "hash.insert(): \"%s\": replaced value", key );
 
     free( cur->value );
     cur->value = value;
@@ -228,7 +228,7 @@ int hash_delete( hash_t *hash, const char *key ){
   data = (hash_element*)hash->data + hash_func( key, hash->size );
 
   LOG_PRINTF( DEBUG_MAX, ZONE, 
-	      "hash.delete(): \"%s\"", key );
+              "hash.delete(): \"%s\"", key );
 
   cur = _hash_get_list_elem( hash, key );
 
@@ -301,7 +301,7 @@ void hash_dump( hash_t *hash ){
   unsigned int i;
 
   printf( "hash_dump(): %d buckets, %d keys total.\n",
-	  hash->size, hash->count );
+          hash->size, hash->count );
 
   for( i=0; i<hash->size; i++ ){
     data = (hash_element*)hash->data + i;
@@ -311,8 +311,8 @@ void hash_dump( hash_t *hash ){
       cur = data->first;
 
       while( cur ){
-	printf( "\"%s\" ", cur->key, cur->value );
-	cur = cur->next;
+        printf( "\"%s\" ", cur->key, cur->value );
+        cur = cur->next;
       }
       printf( "\n" );
     }

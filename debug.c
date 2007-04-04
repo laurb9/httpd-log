@@ -49,7 +49,7 @@ static void cleanup(int sig){
   } else {
     if (sig){
       log_printf( DEBUG_ERROR, ZONE, "got signal %d (%s), exiting.", sig, 
-		  SIGNAL_NAME(sig) );
+                  SIGNAL_NAME(sig) );
       exit(-sig);
     };
   }
@@ -112,7 +112,7 @@ void log_printf( int level, char *file, int line, const char *format, ... ){
   len = snprintf( syslog_buf, SYSLOG_SIZE, "%s:%d ", file, line );
   vsnprintf( syslog_buf+len, SYSLOG_SIZE-1-len, format, ap );
   syslog( (gDebug) ? ((gDebug > 1) ? LOG_DEBUG : LOG_INFO) : LOG_ERR,
-	  "%s", syslog_buf );
+          "%s", syslog_buf );
   if (isatty(0) && stderr_too) {
     fprintf( stderr, "%s\n", syslog_buf );
   }

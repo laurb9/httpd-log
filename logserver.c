@@ -118,19 +118,19 @@ int wait_loop( int sock ){
     if (child_counter && (child_pid = waitpid( 0, &status, WNOHANG ))){
       child_counter--;
       if (WIFEXITED(status)){
-	LOG_PRINTF( DEBUG_MED, ZONE, "wait_loop: child %d exited with status %d",
-		    child_pid, WEXITSTATUS(status));
+        LOG_PRINTF( DEBUG_MED, ZONE, "wait_loop: child %d exited with status %d",
+                    child_pid, WEXITSTATUS(status));
       } else {
-	LOG_PRINTF( DEBUG_MIN, ZONE, "wait_loop: child %d %s.",
-		    child_pid, 
-		    WIFSIGNALED(status) ? "was killed" : "died prematurely" );
+        LOG_PRINTF( DEBUG_MIN, ZONE, "wait_loop: child %d %s.",
+                    child_pid, 
+                    WIFSIGNALED(status) ? "was killed" : "died prematurely" );
       }
       if (child_pid == write_log_pid){ /* oops, __it happens */
-	child_counter++; /* it wasn't the one we expected */
-	LOG_PRINTF( DEBUG_ERROR, ZONE, 
-		    "WARNING: write_log (PID %d) died, trying to respawn",
-		    write_log_pid );
-	spawn_write_log();
+        child_counter++; /* it wasn't the one we expected */
+        LOG_PRINTF( DEBUG_ERROR, ZONE, 
+                    "WARNING: write_log (PID %d) died, trying to respawn",
+                    write_log_pid );
+        spawn_write_log();
       }
     }
 
@@ -164,8 +164,8 @@ int wait_loop( int sock ){
       logfd_age = 0;
 
       if (!detach){
-	LOG_PRINTF( DEBUG_MED, ZONE, "calling write_log_process() to close fds" );
-	write_log_process(write_log);
+        LOG_PRINTF( DEBUG_MED, ZONE, "calling write_log_process() to close fds" );
+        write_log_process(write_log);
       }
     }
 
@@ -178,13 +178,13 @@ int wait_loop( int sock ){
       nfds = 0;
     } else {
       nfds = select(FD_SETSIZE, (fd_set *)&read_fds, 
-		    (fd_set *)NULL, (fd_set *)NULL, &timeout);
+                    (fd_set *)NULL, (fd_set *)NULL, &timeout);
     }
     if (nfds<0){
       if (errno == EINTR){
-	return SIGNAL_CAUGHT;
+        return SIGNAL_CAUGHT;
       } else {
-	LOG_PRINTF( 0, ZONE, "main select() failed: %s", LAST_ERROR );
+        LOG_PRINTF( 0, ZONE, "main select() failed: %s", LAST_ERROR );
       }
     }
     if (action)
@@ -234,7 +234,7 @@ void command_line( int argc, char **argv ){
 
     case 'p':
       if (atoi(optarg))
-	port = atoi(optarg);
+        port = atoi(optarg);
       break;
 
     case 'd': 
@@ -295,7 +295,7 @@ void update_log_file(void){
 #endif
 
     LOG_PRINTF( DEBUG_MIN, ZONE, "Log file name set to %s, next check %s",
-		  log_file, ctime(&time_limit) );
+                  log_file, ctime(&time_limit) );
   }
 }
 
@@ -326,9 +326,9 @@ void process_batch( void ){
   }
   if (pid < 0 && i == 0){
     log_printf( DEBUG_ERROR, ZONE,
-		"fork(process_batch): \"%s\", running in same process, "
-		"inserting delay=%ds",
-		LAST_ERROR, delay );
+                "fork(process_batch): \"%s\", running in same process, "
+                "inserting delay=%ds",
+                LAST_ERROR, delay );
     /*
      * This, in case the system is really busy, will give some
      * breathing room before we do our stuff.
@@ -482,7 +482,7 @@ void parse_entry( char *buffer, int length ){
      * at the end then that is the resellers name 
      */
     if (find_sep( &pos, &length, LOG_FIELD_SEPARATOR ) 
-	&& *pos && *pos != LOG_FIELD_SEPARATOR){
+        && *pos && *pos != LOG_FIELD_SEPARATOR){
       this_entry->root = pos;
       /* here we just make sure it is terminated correctly */
       find_sep( &pos, &length, LOG_FIELD_SEPARATOR );
@@ -519,11 +519,11 @@ void parse_entry( char *buffer, int length ){
     *pos = '^';
     for ( tmp=pos; tmp >= save; tmp-- ){
       if (!*tmp){
-	*tmp = '\'';
+        *tmp = '\'';
       }
     }
     LOG_PRINTF( DEBUG_MIN, ZONE, "ignoring from '%c' in \"%s\" pos %d",
-		pointer, save, pos - save );
+                pointer, save, pos - save );
   } else {
   
     if (++log_counter == LOG_ENTRIES){
@@ -594,7 +594,7 @@ pid_t spawn_write_log(void){
     counter++;
 
     LOG_PRINTF( DEBUG_MIN, ZONE, "write_log process #%d running (PID %d)", 
-		counter, pid );
+                counter, pid );
   }
   return pid;
 }
@@ -636,12 +636,12 @@ int main( int argc, char** argv ){
 
   retries = 7; /* should be defineable */
   while (retries &&
-	 bind( sock, (struct sockaddr*)&logserv, sizeof(logserv)) < 0){
+         bind( sock, (struct sockaddr*)&logserv, sizeof(logserv)) < 0){
     retries--;
     if (retries){
       LOG_PRINTF( DEBUG_ERROR, ZONE, 
-		  "WARNING: bind( %s:%d ): %s, retrying", 
-		  host, port, LAST_ERROR );
+                  "WARNING: bind( %s:%d ): %s, retrying", 
+                  host, port, LAST_ERROR );
       sleep(3);
     } else {
       DIE_ERROR( 1, ZONE, "Retry count reached, exiting!" );
@@ -650,7 +650,7 @@ int main( int argc, char** argv ){
 
   if (retries < 7){
     LOG_PRINTF( DEBUG_ERROR, ZONE, /* we need to log success on same level */
-		"Listening on %s port %d", host, port );
+                "Listening on %s port %d", host, port );
   } else {
     LOG_PRINTF( DEBUG_MIN, ZONE, "Listening on %s port %d", host, port );
   }
@@ -678,10 +678,10 @@ int main( int argc, char** argv ){
       
     case 0: /* child - will outlive parent and will stay in background */
       if (!debug){
-	close( 0 );
-	close( 1 );
-	close( 2 );
-	setsid ();
+        close( 0 );
+        close( 1 );
+        close( 2 );
+        setsid ();
       }
       break;
       
@@ -716,20 +716,20 @@ int main( int argc, char** argv ){
 
     case MSG_IN_QUEUE: 
       if ((received = recvfrom( sock, buffer, MSG_SIZE, 0,
-				(struct sockaddr*)&client, &length)) >= 0){
-	buffer[received] = '\0';
+                                (struct sockaddr*)&client, &length)) >= 0){
+        buffer[received] = '\0';
 
-	LOG_PRINTF( DEBUG_MAX, ZONE, "Received %d bytes from %s",
-		    received, inet_ntoa(client.sin_addr) );
-	LOG_PRINTF( DEBUG_MAX, ZONE, "%s", buffer );
+        LOG_PRINTF( DEBUG_MAX, ZONE, "Received %d bytes from %s",
+                    received, inet_ntoa(client.sin_addr) );
+        LOG_PRINTF( DEBUG_MAX, ZONE, "%s", buffer );
 
-	parse_entry( buffer, received );
+        parse_entry( buffer, received );
 
       } else {
-	/*
-	 * This should probably be done using syslog()
-	 */
-	log_printf( DEBUG_ERROR, ZONE, "recvfrom: %s", LAST_ERROR );
+        /*
+         * This should probably be done using syslog()
+         */
+        log_printf( DEBUG_ERROR, ZONE, "recvfrom: %s", LAST_ERROR );
       }
       break;
 
@@ -742,26 +742,26 @@ int main( int argc, char** argv ){
 
       case SIGALRM:
       case SIGHUP:
-	action = 0;
-	process_batch();
-	signal( action, signal_catch ); /* restore handler after op. */
-	break;
+        action = 0;
+        process_batch();
+        signal( action, signal_catch ); /* restore handler after op. */
+        break;
 
       case SIGTERM:
       case SIGINT:
       default:
-	/*
-	 * Die gracefully
-	 */
-	LOG_PRINTF( DEBUG_MIN, ZONE, "Caught signal %d (%s)", store_action,
-		    SIGNAL_NAME(store_action) );
-	process_batch();
-	if (write_log_pid){
-	  kill( write_log_pid, SIGTERM );
-	}
-	LOG_PRINTF( 0, ZONE, "Stats: %d packets received.", packets_received );
-	DIE_ERROR( 0, ZONE, "Exiting on signal %d (%s)", store_action,
-		   SIGNAL_NAME(store_action) );
+        /*
+         * Die gracefully
+         */
+        LOG_PRINTF( DEBUG_MIN, ZONE, "Caught signal %d (%s)", store_action,
+                    SIGNAL_NAME(store_action) );
+        process_batch();
+        if (write_log_pid){
+          kill( write_log_pid, SIGTERM );
+        }
+        LOG_PRINTF( 0, ZONE, "Stats: %d packets received.", packets_received );
+        DIE_ERROR( 0, ZONE, "Exiting on signal %d (%s)", store_action,
+                   SIGNAL_NAME(store_action) );
       }
     }
   }
