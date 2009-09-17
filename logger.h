@@ -13,15 +13,15 @@
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * Version 2, as published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to:
- * Free Software Foundation, Inc. 
+ * Free Software Foundation, Inc.
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
@@ -41,7 +41,7 @@
 #define DEFAULT_DETACH 0 /* whether to fork processes in background or not */
 #endif
 
-/* 
+/*
  * Host and (UDP) port for logging server. These defaults can be overridden
  * on command line
  */
@@ -62,16 +62,16 @@
 /*
  * Number of entries in the log spool area. The bigger the better
  * (depending on machine, after a certain number there is no improvement).
- * After this many entries are filled (or LOG_TIMEOUT occurrs) the 
+ * After this many entries are filled (or LOG_TIMEOUT occurrs) the
  * server spawns a child to dump the log entries in the right places.
  */
 #ifndef LOG_ENTRIES
 #define LOG_ENTRIES 128
 #endif
-/* 
+/*
  * if no packets are received for LOG_TIMEOUT seconds, flush the log buffer.
  */
-#define LOG_TIMEOUT 4 
+#define LOG_TIMEOUT 4
 #define LOG_FIELD_SEPARATOR '\t' /* in apache log line */
 /*
  * maximum number of simmultaneous live children allowed
@@ -90,28 +90,28 @@
 #endif
 /*
  * Log entry structure. All the char* fields are supposed to point
- * to somewhere inside the log line, so that we don't need to 
+ * to somewhere inside the log line, so that we don't need to
  * worry about fragmentation
  */
 typedef struct {
-  time_t time;      /* time this request occurred          */
-  char *hostname;   /* normally not set                    */
-  char *hostip;     /* source IP of request (%a)           */
-  char *real_user;  /* logged-in user       (%l,hacked)    */
-  char *user;       /* effective user       (%u) (if any)  */
-  unsigned status;  /* status of request    (%s)           */
-  unsigned bytes;   /* bytes sent in reply  (%b)           */
-  char *vhost;      /* virtual host name    (%v)           */
-  /* int  elapsed; *//* time elapsed to server request(%T) */
-  /* pid_t pid;    *//* pid of process       (%P)          */
-  char *useragent;
-  char *referrer;
-  char *method;     /* GET POST or whatever                */
-  char *uri;        /* URI of request                      */
-  char *proto;      /* protocol of request (HTTP/1.1,etc)  */
-  /* note that we don't use the protocol                   */
-  char *root;       /* set to reseller name if this is a root request */
-  char logline[MSG_SIZE+1];    /* original log line        */
+    time_t time;        /* time this request occurred          */
+    char *hostname;     /* normally not set                    */
+    char *hostip;       /* source IP of request (%a)           */
+    char *real_user;    /* logged-in user       (%l,hacked)    */
+    char *user;         /* effective user       (%u) (if any)  */
+    unsigned status;    /* status of request    (%s)           */
+    unsigned bytes;     /* bytes sent in reply  (%b)           */
+    char *vhost;        /* virtual host name    (%v)           */
+    /* int  elapsed; */ /* time elapsed to server request(%T)  */
+    /* pid_t pid;    */ /* pid of process       (%P)           */
+    char *useragent;
+    char *referrer;
+    char *method;       /* GET POST or whatever                */
+    char *uri;          /* URI of request                      */
+    char *proto;        /* protocol of request (HTTP/1.1,etc)  */
+    /* note that we don't use the protocol                   */
+    char *root;         /* set to reseller name if this is a root request */
+    char logline[MSG_SIZE+1];    /* original log line        */
 } log_entry;
 
 #define LOGGER_SPOOL    "/opt/httpd-log/data"
@@ -123,7 +123,7 @@ typedef struct {
 #define LOG_FILE_FORMAT "%Y-%m-%d.log" /* daily log */
 /* #define LOG_FILE_FORMAT "%Y-%m.log" *//* monthly log */
 /* #define LOG_FILE_FORMAT "%H:%M:%S.log" *//* every sec (debugging!) */
-/* 
+/*
  * update log file name every so often (secs)
  * do not define it to enable update only at midnight
  */
@@ -139,13 +139,10 @@ typedef struct {
 /*
  * We could inline these
  */
-void get_hash( char hashed[PATH_SIZE], char *name );
-int make_hash( char hashed[PATH_SIZE], char *name );
-void process_entry( log_entry *rec );
+void get_hash(char hashed[PATH_SIZE], char *name);
+int make_hash(char hashed[PATH_SIZE], char *name);
+void process_entry(log_entry *rec);
 
-void write_log_process( int p[2] ); /* argument is pipe */
+void write_log_process(int p[2]); /* argument is pipe */
 
 #endif
-
-
-

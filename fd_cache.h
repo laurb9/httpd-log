@@ -13,15 +13,15 @@
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * Version 2, as published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to:
- * Free Software Foundation, Inc. 
+ * Free Software Foundation, Inc.
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
@@ -40,9 +40,9 @@
 #define GC_DELETE 20 /* 20% */
 
 typedef struct {
-  int fd;
-  time_t time;
-  char file[PATH_SIZE];
+    int fd;
+    time_t time;
+    char file[PATH_SIZE];
 } fd_element;
 
 /*
@@ -52,7 +52,7 @@ typedef struct {
 /*
  * Initialize descriptors data structures. Call this first.
  */
-void init_fd_table( void );
+void init_fd_table(void);
 /*
  * Deallocate descriptors. Called automatically at program exit.
  */
@@ -66,12 +66,12 @@ void close_fd_all(int sync, time_t age);
  * how much to delete (0.1 for 10%, 1 for all). Use 0 to use default
  * defined above (GC_DELETE)
  */
-void garbage_collect( int gc_delete );
+void garbage_collect(int gc_delete);
 /*
  * Retrieve the file descriptor corresponding to filename.
  * It opens the file if needed
  * Returns 0 if file could not be opened
  */
-int get_fd( char *filename );
+int get_fd(char *filename);
 
 #endif
