@@ -1,5 +1,6 @@
 /*
  * Copyright (C)1999-2003 InfoStreet, Inc.    www.infostreet.com
+ * Copyright (C)2009 Laurentiu Badea          sourceforge.net/users/wotevah
  *
  * Author:   Laurentiu C. Badea (L.C.) sourceforge.net/users/wotevah
  * Created:  Mar 23, 1999
@@ -25,8 +26,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-static const char *VERSION =
-        "$Id$";
+static const char *VERSION = "$Id$";
 
 #include <stdio.h>
 #include <errno.h>
@@ -66,7 +66,7 @@ int action = 0; /* this will hold the name of the signal caught */
 int packets_received = 0;
 
 struct option longs[] = {
-    {"host",    required_argument, NULL, 'h'},
+    {"listen",  required_argument, NULL, 'l'},
     {"port",    required_argument, NULL, 'p'},
     {"debug",   required_argument, NULL, 'd'},
     {"nodaemon",      no_argument, NULL, 'n'},
@@ -75,7 +75,7 @@ struct option longs[] = {
     {"unknown", 0, NULL, 0}
 };
 
-const char shorts[] = "h:p:d:nDs:";
+const char shorts[] = "l:p:d:nDs:";
 
 log_entry log_buffer[LOG_ENTRIES];
 int log_counter = 0;
@@ -235,7 +235,7 @@ void command_line(int argc, char **argv) {
 
         switch (c) {
 
-        case 'h':
+        case 'l':
             strncpy(host, optarg, HOSTNAME_SIZE);
             break;
 
@@ -628,18 +628,20 @@ int main(int argc, char** argv) {
     /*
      * Should not rely on current directory after calling log_entry though...
      */
-    if (chdir(logger_spool))
+    if (chdir(logger_spool)) {
         DIE_ERROR(5, ZONE, "chdir %s: %s", logger_spool, LAST_ERROR);
-    else
+    } else {
         LOG_PRINTF(DEBUG_MAX, ZONE, "Using spool dir \"%s\"", logger_spool);
-
+    }
     if (!(info = gethostbyaddr(host, strlen(host), 0))) {
-        if (!(info = gethostbyname(host)))
+        if (!(info = gethostbyname(host))) {
             DIE_ERROR(1, ZONE, "gethostbyname( %s ): %s", host, LAST_ERROR);
+        }
     }
 
-    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         DIE_ERROR(1, ZONE, "socket(SOCK_DGRAM): %s", LAST_ERROR);
+    }
 
     bzero((char*) &logserv, sizeof(logserv));
     logserv.sin_family = AF_INET;
@@ -652,11 +654,11 @@ int main(int argc, char** argv) {
         retries--;
         if (retries) {
             LOG_PRINTF(DEBUG_ERROR, ZONE,
-                       "WARNING: bind( %s:%d ): %s, retrying", host, port,
+                       "WARNING: bind(%s:%d): %s, retrying", host, port,
                        LAST_ERROR);
             sleep(3);
         } else {
-            DIE_ERROR(1, ZONE, "Retry count reached, exiting!");
+            DIE_ERROR(1, ZONE, "Cannot bind to %s:%d, exiting", host, port);
         }
     }
 
