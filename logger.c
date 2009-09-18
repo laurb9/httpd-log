@@ -1,5 +1,6 @@
 /*
  * Copyright (C)1999-2003 InfoStreet, Inc.    www.infostreet.com
+ * Copyright (C)2009 Laurentiu Badea          sourceforge.net/users/wotevah
  *
  * Author:   Laurentiu C. Badea (L.C.) sourceforge.net/users/wotevah
  * Created:  Mar 23, 1999
@@ -54,13 +55,13 @@ long discarded = 0;
 long failed = 0;
 
 struct option longs[] = {
-    {"host",required_argument, NULL, 'h'},
+    {"to",required_argument, NULL, 't'},
     {"port", required_argument, NULL, 'p'},
     {"debug", required_argument, NULL, 'd'},
     {"unknown", 0, NULL, 0}
 };
 
-const char shorts[] = "h:p:d:m";
+const char shorts[] = "t:p:d:m";
 char me[32];
 
 void cleanup(int sig) {
@@ -120,7 +121,7 @@ int main(int argc, char** argv) {
 
         switch (c) {
 
-        case 'h':
+        case 't':
             strncpy(host, optarg, HOSTNAME_SIZE);
             break;
 
