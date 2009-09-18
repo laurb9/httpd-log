@@ -28,11 +28,12 @@
 # Note that files are installed in /usr/local by default. 
 # You need to change it by running configure --prefix=<path>
 
-bin_PROGRAMS        = httpdlogd logger
-httpdlogd_SOURCES   = logserver.c log_entry.c fd_cache.c
-httpdlogd_LDADD     = $(LIBOBJS) -L. -lcore
-logger_SOURCES      = logger.c
-logger_LDADD        = $(LIBOBJS) -L. -lcore
+bin_PROGRAMS        = httpd-logger
+sbin_PROGRAMS       = httpd-logd
+httpd_logd_SOURCES  = logserver.c log_entry.c fd_cache.c
+httpd_logd_LDADD    = $(LIBOBJS) -L. -lcore
+httpd_logger_SOURCES= logger.c
+httpd_logger_LDADD  = $(LIBOBJS) -L. -lcore
 
 noinst_LIBRARIES    = libcore.a
 libcore_a_SOURCES   = debug.c hash.c signalnames.c
@@ -43,4 +44,3 @@ hash.c:  hash.h
 signalnames.c: makesignaldefs.pl
 	perl ./$< > $@
  
-

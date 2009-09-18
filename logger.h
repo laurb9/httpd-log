@@ -1,5 +1,6 @@
 /*
  * Copyright (C)1999-2002 InfoStreet, Inc.    www.infostreet.com
+ * Copyright (C)2009 Laurentiu Badea          sourceforge.net/users/wotevah
  *
  * Author:   Laurentiu C. Badea (L.C.) sourceforge.net/users/wotevah
  * Created:  Mar 23, 1999
@@ -114,7 +115,7 @@ typedef struct {
     char logline[MSG_SIZE+1];    /* original log line        */
 } log_entry;
 
-#define LOGGER_SPOOL    "/opt/httpd-log/data"
+#define LOGGER_SPOOL    "/var/log/httpd-log"
 #define PATH_LOG_VHOST  "vhosts/"
 #define PATH_LOG_USER   "users/"
 #define PATH_LOG_ROOT   "root/"
