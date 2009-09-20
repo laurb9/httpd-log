@@ -27,10 +27,12 @@
 
 static const char *VERSION = "$Id$";
 
+#define _LARGEFILE64_SOURCE
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "fd_cache.h"
@@ -346,10 +348,10 @@ int get_fd(char *filename) {
      */
     count = 2;
     while (count) {
-        if ((fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644)) > 0) {
+        fd = open(filename, O_CREAT|O_WRONLY|O_APPEND|O_LARGEFILE, 0644);
+        if (fd > 0) {
             pos_cache = add_fd(fd, filename);
             return fd;
-
         } else {
             if (errno == EMFILE || errno == ENFILE) {
                 /*
