@@ -1,5 +1,6 @@
 /*
  * Copyright (C)1999-2003 InfoStreet, Inc.    www.infostreet.com
+ * Copyright (C)2009-2011 Laurentiu Badea     sourceforge.net/users/wotevah
  *
  * Author:   Laurentiu C. Badea (L.C.) sourceforge.net/users/wotevah
  * Created:  Mar 24, 1999
@@ -89,7 +90,7 @@ inline void mk_timestamp(time_t t, char *where) {
  * Hash is in the form a/b/abac/ (or a/b/www.abac.com/)
  * The hashed array is pre-allocated.
  * Current directory is NOT changed.
- * NOTE: should increase to 3 elements.
+ * TODO: number of elements should be configurable
  */
 void get_hash(char hashed[PATH_SIZE], char *name) {
     int length = strlen(name);
@@ -117,45 +118,6 @@ void get_hash(char hashed[PATH_SIZE], char *name) {
 }
 
 /*
- * Take the first path element from src and put it in firstdir
- * input: src = "/aaa/bbb/ccc"
- * output: dst = "aaa"
- */
-void get_first_dir(char *dst, char *src) {
-    char *tmp = dst;
-    if (*src++ != '/') {
-        *dst = '\0';
-        return;
-    }
-    /* skip all leading /, ./ */
-    while (*src == '/' || (*src == '.' && src[1] == '/')) {
-        src++;
-    };
-    while (*src != '/' && (*tmp++ = *src++))
-        ;
-    if (*src == '/') {
-        *tmp = '\0'; /* we have a pathname in firstdir */
-    } else {
-        /* no slash found in uri, maybe it's a file name. assume root dir. */
-        *dst = '\0';
-    }
-}
-
-/*
- * Put username in user, change src to the rest of the path
- * Returns 0 if a user pathname could not be found, true otherwise
- */
-int get_username(char *user, char **src) {
-    char *tmp;
-    int length;
-    get_first_dir(user, *src);
-    if (*user) {
-        *src += strlen(user) + 1;
-    };
-    return *user;
-}
-
-/*
  * write to pipe (to write_log presumably)
  */
 inline void my_pipe_write(int fd, const void *buf, int size) {
@@ -171,59 +133,22 @@ inline void my_pipe_write(int fd, const void *buf, int size) {
  * Process one log entry
  */
 void process_entry(log_entry *rec) {
-    static char firstdir[PATH_SIZE + 1];
-    static char username[PATH_SIZE + 1];
     int size, length;
     char *tmp, *log;
 
     /*
-     * See if this is a true VHOST or is using a main website
+     * this is a virtual host
      */
-    if (!rec->root) {
-        /*
-         * this is a virtual host
-         */
-        memcpy(path_buf, PATH_LOG_VHOST, sizeof(PATH_LOG_VHOST));
-        get_hash(path_buf + sizeof(PATH_LOG_VHOST) - 1, rec->vhost);
-        get_first_dir(firstdir, rec->uri);
-    } else {
-        /*
-         * this is the main website
-         */
-        if (get_username(username, &rec->uri)) {
-            /*
-             * username could be identified
-             * path is of the form PATH_LOG_USER/rec->root/u/s/username
-             */
-            memcpy(path_buf, PATH_LOG_USER, sizeof(PATH_LOG_USER));
-            length = strlen(rec->root);
-            memcpy(path_buf + sizeof(PATH_LOG_USER) - 1, rec->root, length);
-            length += sizeof(PATH_LOG_USER);
-            path_buf[length - 1] = '/';
-            get_hash(path_buf + length, username);
-            get_first_dir(firstdir, rec->uri);
-        } else {
-            /*
-             * No username, maybe it's the root site pages
-             */
-            memcpy(path_buf, PATH_LOG_ROOT, sizeof(PATH_LOG_ROOT));
-            length = strlen(rec->root);
-            memcpy(path_buf + sizeof(PATH_LOG_ROOT) - 1, rec->root, length);
-            length += sizeof(PATH_LOG_ROOT);
-            path_buf[length - 1] = '/';
-            path_buf[length] = '\0';
-            get_first_dir(firstdir, rec->uri);
-        }
-    }
+    get_hash(path_buf, rec->vhost);
 
     /*
-     * At this point we have the log entry record in rec,
+     * At this point we have the log entry record in rec and
      * the path of the log file (not including the file itself) in path_buf
-     * and the first directory in firstdir
      */
     if (rec->status >= 200) {
         /*
-         * Begin prepare raw message. This looks very ugly.
+         * Begin prepare raw message for the log writer process.
+         * The format is [len]path[len]logline
          */
         length = strlen(path_buf);
         tmp = path_buf + length;
@@ -242,7 +167,7 @@ void process_entry(log_entry *rec) {
                 rec->hostip, rec->user, timestamp, rec->method, rec->uri,
                 rec->proto, rec->status, rec->bytes
 #ifdef LOG_EXTENDED
-        , rec->referrer, rec->useragent
+        , rec->referrer, rec->user_agent
 #endif
         );
         length += sizeof(unsigned) * 2 +

@@ -77,7 +77,7 @@ autoconf
 test -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" == "/" && exit 1
 %{__rm} -rf $RPM_BUILD_ROOT
 %{__make} DESTDIR=$RPM_BUILD_ROOT install
-mkdir -p ${RPM_BUILD_ROOT}/var/log/httpd-log/{vhosts,users,root}
+mkdir -p ${RPM_BUILD_ROOT}/var/log/httpd-log
 mkdir -p ${RPM_BUILD_ROOT}/etc/httpd/conf.d
 mkdir -p ${RPM_BUILD_ROOT}/etc/sysconfig
 install -D -m 0755 httpd-log.sh ${RPM_BUILD_ROOT}/etc/init.d/httpd-log
@@ -95,8 +95,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/sbin/httpd-logd
 %config /etc/init.d/httpd-log
 %config(noreplace) /etc/sysconfig/httpd-log
-%dir /var/log/httpd-log
-%attr(-,nobody,nobody) /var/log/httpd-log/*
+%attr(-,nobody,nobody) %dir /var/log/httpd-log
 
 %files client
 %defattr(-,root,root)

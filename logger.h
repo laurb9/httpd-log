@@ -1,6 +1,6 @@
 /*
  * Copyright (C)1999-2002 InfoStreet, Inc.    www.infostreet.com
- * Copyright (C)2009 Laurentiu Badea          sourceforge.net/users/wotevah
+ * Copyright (C)2009-2011 Laurentiu Badea     sourceforge.net/users/wotevah
  *
  * Author:   Laurentiu C. Badea (L.C.) sourceforge.net/users/wotevah
  * Created:  Mar 23, 1999
@@ -91,36 +91,28 @@
 #endif
 /*
  * Log entry structure. All the char* fields are supposed to point
- * to somewhere inside the log line, so that we don't need to
+ * to somewhere inside the logline buffer, so that we don't need to
  * worry about fragmentation
  */
 typedef struct {
-    time_t time;        /* time this request occurred          */
-    char *hostname;     /* normally not set                    */
+    time_t time;        /* timestamp of request                */
     char *hostip;       /* source IP of request (%a)           */
-    char *real_user;    /* logged-in user       (%l,hacked)    */
-    char *user;         /* effective user       (%u) (if any)  */
+    char *remote_user;  /* identd remote user   (%l)           */
+    char *user;         /* authenticated user   (%u)           */
     unsigned status;    /* status of request    (%s)           */
     unsigned bytes;     /* bytes sent in reply  (%b)           */
     char *vhost;        /* virtual host name    (%v)           */
-    /* int  elapsed; */ /* time elapsed to server request(%T)  */
-    /* pid_t pid;    */ /* pid of process       (%P)           */
-    char *useragent;
+    char *user_agent;
     char *referrer;
     char *method;       /* GET POST or whatever                */
     char *uri;          /* URI of request                      */
     char *proto;        /* protocol of request (HTTP/1.1,etc)  */
-    /* note that we don't use the protocol                   */
-    char *root;         /* set to reseller name if this is a root request */
     char logline[MSG_SIZE+1];    /* original log line        */
 } log_entry;
 
 #define LOGGER_SPOOL    "/var/log/httpd-log"
-#define PATH_LOG_VHOST  "vhosts/"
-#define PATH_LOG_USER   "users/"
-#define PATH_LOG_ROOT   "root/"
 
-/* strftime(3) format */
+/* log file naming, in strftime(3) format TODO: this should be an option */
 #define LOG_FILE_FORMAT "%Y-%m-%d.log" /* daily log */
 /* #define LOG_FILE_FORMAT "%Y-%m.log" *//* monthly log */
 /* #define LOG_FILE_FORMAT "%H:%M:%S.log" *//* every sec (debugging!) */

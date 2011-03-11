@@ -1,6 +1,6 @@
 /*
  * Copyright (C)1999-2003 InfoStreet, Inc.    www.infostreet.com
- * Copyright (C)2009 Laurentiu Badea          sourceforge.net/users/wotevah
+ * Copyright (C)2009-2011 Laurentiu Badea     sourceforge.net/users/wotevah
  *
  * Author:   Laurentiu C. Badea (L.C.) sourceforge.net/users/wotevah
  * Created:  Mar 23, 1999

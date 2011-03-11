@@ -1,6 +1,6 @@
 /*
  * Copyright (C)1999-2003 InfoStreet, Inc.    www.infostreet.com
- * Copyright (C)2009 Laurentiu Badea          sourceforge.net/users/wotevah
+ * Copyright (C)2009-2011 Laurentiu Badea     sourceforge.net/users/wotevah
  *
  * Author:   Laurentiu C. Badea (L.C.) sourceforge.net/users/wotevah
  * Created:  Mar 23, 1999
@@ -148,8 +148,8 @@ int wait_loop(int sock) {
          */
         if (logfd_age && !child_counter) {
             /*
-             * I'm sure that if structs would be guaranteed not to change the order
-             * of elements, this would look much nicer
+             * This part would look nicer if structs were guaranteed
+             * to preserve the order of their fields.
              */
             write_log_tmp = write_log_msg;
 #define WRITE_LOG_ADD(type, value) \
@@ -436,10 +436,9 @@ void parse_entry(char *buffer, int length) {
     pos = this_entry->logline;
 
     /*
-     * The next portion is highly dependent of the source log format
-     * The format understood is this (as it appears in apache conf)
-     * "%a'%u'%s'%b'%v'%P'%T'%r'%{Referer}i'%{User-agent}'"
-     * assuming that LOG_FIELD_SEPARATOR is a single quote.
+     * Parse the source logline into its components.
+     * The format understood is defined in httpd-log.conf as:
+     * "%a\t%u\t%s\t%b\t%v\t%P\t%T\t%r\t%{Referer}i\t%{User-agent}\t"
      */
     while (pos) { /* this loop will be executed only once though */
 
@@ -448,12 +447,12 @@ void parse_entry(char *buffer, int length) {
         if (!find_sep(&pos, &length, LOG_FIELD_SEPARATOR))
             break;
 
-        /* logged-in user ("real" user) */
-        this_entry->real_user = pos;
+        /* identd remote user (usually '-') */
+        this_entry->remote_user = pos;
         if (!find_sep(&pos, &length, LOG_FIELD_SEPARATOR))
             break;
 
-        /* effective user */
+        /* authenticated user, if any */
         this_entry->user = pos;
         if (!find_sep(&pos, &length, LOG_FIELD_SEPARATOR))
             break;
@@ -470,7 +469,7 @@ void parse_entry(char *buffer, int length) {
             break;
         this_entry->bytes = (*tmp == '-') ? -1 : atoi(tmp);
 
-        /* Virtual host serving request */
+        /* Virtual host (ServerName) */
         this_entry->vhost = pos;
         if (!find_sep(&pos, &length, LOG_FIELD_SEPARATOR))
             break;
@@ -487,20 +486,10 @@ void parse_entry(char *buffer, int length) {
             break;
 
         /* User Agent */
-        this_entry->useragent = pos;
+        this_entry->user_agent = pos;
+        if (!find_sep(&pos, &length, LOG_FIELD_SEPARATOR))
+            *pos = '\0';
 
-        /*
-         * Dirty little quick hack: if the log has an extra non-null field
-         * at the end then that is the resellers name
-         */
-        if (find_sep(&pos, &length, LOG_FIELD_SEPARATOR)
-            && *pos && *pos != LOG_FIELD_SEPARATOR) {
-            this_entry->root = pos;
-            /* here we just make sure it is terminated correctly */
-            find_sep(&pos, &length, LOG_FIELD_SEPARATOR);
-        } else {
-            this_entry->root = NULL;
-        }
         /*
          * Now go back and parse REQUEST to get to method, uri and protocol
          * Looks like "GET /something HTTP/1.0"
