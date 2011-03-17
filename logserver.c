@@ -487,8 +487,7 @@ void parse_entry(char *buffer, int length) {
 
         /* User Agent */
         this_entry->user_agent = pos;
-        if (!find_sep(&pos, &length, LOG_FIELD_SEPARATOR))
-            *pos = '\0';
+        find_sep(&pos, &length, LOG_FIELD_SEPARATOR);
 
         /*
          * Now go back and parse REQUEST to get to method, uri and protocol
