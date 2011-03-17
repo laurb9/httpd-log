@@ -101,7 +101,7 @@ void get_hash(char hashed[PATH_SIZE], char *name) {
     }
 
     if (length > 10 /* at least www.ab.com */
-    && !memcmp(name, "www.", 4)) {
+        && !memcmp(name, "www.", 4)) {
         a = name[4];
         b = name[5];
     } else {
@@ -120,20 +120,27 @@ void get_hash(char hashed[PATH_SIZE], char *name) {
 /*
  * write to pipe (to write_log presumably)
  */
-inline void my_pipe_write(int fd, const void *buf, int size) {
-    int wrote;
-    static int counter = 0;
-    counter++;
-    if ((wrote = write(fd, buf, size)) < 0) {
-        DIE_ERROR(1, ZONE, "write(pipe, \"%s\"): %s", (char*) buf, LAST_ERROR);
-    };
+inline void my_pipe_write(int fd, const char *buf, int size) {
+    int sent, left;
+    left = size;
+    while ((sent = write(fd, buf + size - left, left)) < left) {
+        if (sent < 0){
+            DIE_ERROR(1, ZONE, "write(pipe=%d, buf, %d): %s",
+                               fd, left, LAST_ERROR);
+        } else {
+            /* wrote fewer than expected bytes, next write might block */
+            LOG_PRINTF(0, ZONE, "write(pipe, buf, %d): sent %d bytes.",
+                                left, sent);
+            left -= sent;
+        }
+    }
 }
 
 /*
  * Process one log entry
  */
 void process_entry(log_entry *rec) {
-    int size, length;
+    int length;
     char *tmp, *log;
 
     /*
@@ -193,7 +200,7 @@ void process_entry(log_entry *rec) {
  * Read from the pipe.
  * It retries the read until it has all the data
  */
-inline void my_pipe_read(int fd, void *buf, int size) {
+inline void my_pipe_read(int fd, char *buf, int size) {
     int left = size;
     int recvd = 0;
     while (left) {
@@ -253,11 +260,11 @@ void write_log_process(int p[2]) {
      */
     while (loop_control) {
 
-        my_pipe_read(p[0], &size, sizeof(size));
+        my_pipe_read(p[0], (char*)&size, sizeof(size));
         my_pipe_read(p[0], path_buf, size);
         path_buf[size] = '\0';
 
-        my_pipe_read(p[0], &size, sizeof(size));
+        my_pipe_read(p[0], (char*)&size, sizeof(size));
         my_pipe_read(p[0], msg_buf, size);
         msg_buf[size] = '\n';
 
