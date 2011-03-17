@@ -28,7 +28,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-static const char *VERSION = "$Id$";
+static const char *VERSION __attribute__ ((used)) = "$Id$";
 
 #include <malloc.h>
 #include <string.h>
@@ -58,7 +58,7 @@ unsigned int hash_func(const char * string, unsigned int size) {
 
     sum = 0;
 
-    while (c = *string++) {
+    while ((c = *string++)) {
         sum += (unsigned) c;
     }
 
@@ -273,7 +273,6 @@ static void _list_destroy(list_element *list) {
  * deallocate entire hash
  */
 void hash_destroy(hash_t *hash) {
-    list_element *cur;
     hash_element *data;
     int i;
 
@@ -305,7 +304,7 @@ void hash_dump(hash_t *hash) {
             cur = data->first;
 
             while (cur) {
-                printf("\"%s\" ", cur->key, cur->value);
+                printf("\"%s\"=\"%s\" ", cur->key, (char*)cur->value);
                 cur = cur->next;
             }
             printf("\n");

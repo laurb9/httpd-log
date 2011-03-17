@@ -39,6 +39,7 @@
 #ifdef USE_SYSLOG
 # include <syslog.h>
 # include <string.h>
+void init_syslog(char *ident, int options);
 #endif
 
 #define DEBUG_DEFAULT 9
@@ -71,6 +72,7 @@ extern int gDebug;
 #define ZONE __FILE__, __LINE__
 
 void debug_init(char *ident, int debug_level, int options);
+extern char *SIGNAL_NAME(int); /* defined in signalnames.c */
 
 void log_printf(int level, char *file, int line, const char *format, ...);
 void die_printf(int code, char *file, int line, const char*format, ...);

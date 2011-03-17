@@ -32,7 +32,7 @@
  * TODO: maybe buffering ?
  */
 
-static const char *VERSION = "$Id$";
+static const char *VERSION __attribute__ ((used)) = "$Id$";
 
 #include <stdio.h>
 #include <errno.h>

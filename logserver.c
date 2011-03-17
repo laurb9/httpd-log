@@ -26,7 +26,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-static const char *VERSION = "$Id$";
+static const char *VERSION __attribute__ ((used)) = "$Id$";
 
 #include <stdio.h>
 #include <errno.h>
@@ -603,10 +603,10 @@ int main(int argc, char** argv) {
 
     struct sockaddr_in logserv, client;
     struct hostent *info;
+    socklen_t length;
 
-    int length, received, retries;
+    int received, retries;
     int store_action;
-    char tmp;
 
 #ifdef USE_SYSLOG
     init_syslog( "logserver", LOG_PID );

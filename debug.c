@@ -25,8 +25,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-static const char *VERSION = "$Id$";
+static const char *VERSION __attribute__ ((used)) = "$Id$";
 
+#include <stdlib.h>
+#include <signal.h>
 #include "debug.h"
 
 int gDebug = DEBUG_ERROR; /* can also be DEBUG_MIN, DEBUG_MED, DEBUG_MAX */
@@ -99,7 +101,6 @@ void die_printf(int code, char *file, int line, const char *format, ...) {
     va_end(ap);
     exit(code);
 }
-;
 
 void log_printf(int level, char *file, int line, const char *format, ...) {
     int len;

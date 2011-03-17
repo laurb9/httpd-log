@@ -32,7 +32,7 @@
  * use old_log_file to write remaining logs after log_file has changed.
  */
 
-static const char *VERSION = "$Id$";
+static const char *VERSION __attribute__ ((used)) = "$Id$";
 
 #include <stdio.h>
 #include <errno.h>
