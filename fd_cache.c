@@ -26,7 +26,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
 
-static const char *VERSION = "$Id$";
+static const char *VERSION __attribute__ ((used)) = "$Id$";
 
 #define _LARGEFILE64_SOURCE
 #include <stdio.h>
@@ -39,19 +39,16 @@ static const char *VERSION = "$Id$";
 #include "fd_cache.h"
 #include "debug.h"
 
-fd_element **fd_array = NULL; /* main descriptors table                */
-fd_element **fd_sort_array = NULL;/* descriptors table used for sorting
- (it holds the same pointers except the
- order may change)                     */
-int fd_num, fd_allocated; /* fd_allocated starts at 0, upto fd_num */
-void *mem_pool;
+fd_element *mem_pool;           /* contiguous memory space for descriptors */
+fd_element **fd_array = NULL;   /* array of pointers into mem_pool         */
+fd_element **fd_sort_array = NULL;/* same as fd_array, used for sorting    */
+int fd_num, fd_allocated;       /* fd_allocated starts at 0, upto fd_num */
 
 extern int debug;
 extern int detached;
 
 /*
  * Delete a file descriptor (+ name) from the list
- * Should be inlined.
  */
 inline int delete_fd(int index) {
     /* This is a critical zone (in case we plan to multithread) */
@@ -131,9 +128,9 @@ void init_fd_table(void) {
     fd_num = getdtablesize();
     fd_num = fd_num * 0.8; /* leave 20% for other uses */
 
-    mem_pool = malloc(fd_num * sizeof(fd_element));
-    fd_array = (fd_element**) malloc(fd_num * sizeof(fd_element));
-    fd_sort_array = (fd_element**) malloc(fd_num * sizeof(fd_element));
+    mem_pool = (fd_element*) malloc(fd_num * sizeof(fd_element));
+    fd_array = (fd_element**) malloc(fd_num * sizeof(fd_element*));
+    fd_sort_array = (fd_element**) malloc(fd_num * sizeof(fd_element*));
 
     if (!mem_pool || !fd_array || !fd_sort_array) {
         DIE_ERROR(6, ZONE, "could not allocate descriptor pool");
@@ -155,7 +152,7 @@ void init_fd_table(void) {
      * Now distribute chunks of the pool to individual elements
      */
     for (i = 0; i < fd_num; i++) {
-        fd_array[i] = mem_pool + i * sizeof(fd_element);
+        fd_array[i] = mem_pool + i;
         fd_array[i]->fd = 0; /* mark as unallocated */
         fd_sort_array[i] = fd_array[i];
     }
@@ -190,8 +187,8 @@ inline int get_fd_hash(char *filename) {
 
 /*
  * Garbage collector. Deallocate least used descriptors;
- * gc_delete may be 0 to use default.
- * It is a fractional number telling how much to delete (100 to delete all)
+ * gc_delete is a percentage number telling how much to delete 
+ * 100 to delete all, 0 to use the default (GC_DELETE)
  */
 void garbage_collect(int gc_delete) {
     int count;
