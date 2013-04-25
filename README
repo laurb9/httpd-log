@@ -1,0 +1,33 @@
+
+Install httpd-log-client on each httpd machine and httpd-log-server on the
+log machine (they can be the same).
+
+Configuration:
+Note: you don't need to configure anything if both are on the same machine.
+
+  - On log server:
+
+    1) If accepting logs from other machines, edit /etc/sysconfig/httpd-log
+       to have --listen 0.0.0.0 or the machine's IP address.
+
+    2) chkconfig httpd-log-server on
+       service httpd-log-server start
+
+    3) Make sure your firewall allows incoming UDP traffic on port 8181.
+       The port can be changed in /etc/sysconfig/httpd-log but make sure
+       to change it on the clients as well.
+
+  - On log client:
+
+    1) If you don't want Apache to write its standard logs in addition to 
+       sending them to httpd-log-server then comment out the CustomLog line 
+       in /etc/httpd/conf/httpd.conf
+
+    2) If sending to another server, edit /etc/httpd/conf.d/httpd-log.conf
+       Add "--to x.x.x.x" parameter where x.x.x.x is the log server IP.
+
+    3) service httpd restart
+
+Make some http requests and check /var/log/httpd-log for the automatically
+created log file hierarchy.
+
