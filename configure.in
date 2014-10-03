@@ -34,6 +34,9 @@ AM_CONFIG_HEADER([config.h])
 AC_PROG_CC
 AC_PROG_RANLIB
 
+dnl -fPIC required for x64
+CFLAGS="$CFLAGS -Wall -g -fPIC"
+
 AC_ARG_WITH( syslog, [  --without-syslog        disable syslog() support ],
         NO_SYSLOG=1)
 
